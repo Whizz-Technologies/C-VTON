@@ -36,31 +36,31 @@ semantic_cloth_labels = [
 ]
 
 semantic_densepose_labels = [
-    [0, 0, 0],
-	[105, 105, 105],
-	[85, 107, 47],
-	[139, 69, 19],
-	[72, 61, 139],
-	[0, 128, 0],
-	[154, 205, 50],
-	[0, 0, 139],
-	[255, 69, 0],
-	[255, 165, 0],
-	[255, 255, 0],
-	[0, 255, 0],
-	[186, 85, 211],
-	[0, 255, 127],
-	[220, 20, 60],
-	[0, 191, 255],
-	[0, 0, 255],
-	[216, 191, 216],
-	[255, 0, 255],
-	[30, 144, 255],
-	[219, 112, 147],
-	[240, 230, 140],
-	[255, 20, 147],
-	[255, 160, 122],
-	[127, 255, 212]
+    [0, 0, 0], #Background
+	[105, 105, 105], 
+	[85, 107, 47], #Chest
+	[139, 69, 19], #Left Hand
+	[72, 61, 139], #Right Hand
+	[0, 128, 0], #Right Feet
+	[154, 205, 50], #Left Feet
+	[0, 0, 139], #left thigh back
+	[255, 69, 0], #right left back
+	[255, 165, 0], #Left Thigh
+	[255, 255, 0], #Right Thigh
+	[0, 255, 0], #left leg lower back
+	[186, 85, 211], #right leg lower back
+	[0, 255, 127], #Left Leg Lower front
+	[220, 20, 60], #Right Leg Lower front
+	[0, 191, 255], #Right Hand Inner Top
+	[0, 0, 255], #Left Hand Inner Top
+	[216, 191, 216], #Right Hand Outer Top
+	[255, 0, 255], #Left Hand Outer Top
+	[30, 144, 255], #Right Hand Inner Bottom
+	[219, 112, 147], #Left Hand Inner Bottom
+	[240, 230, 140], #Right Hand Outter Bottom
+	[255, 20, 147], #Left Hand Outer Bottom
+	[255, 160, 122], #Left Head
+	[127, 255, 212] #Right Head
 ]
 
 semantic_body_labels = [
