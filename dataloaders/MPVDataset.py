@@ -158,7 +158,7 @@ class MPVDataset(Dataset):
         cloth_image = cv2.cvtColor(cloth_image, cv2.COLOR_BGR2RGB)
         
         # load cloth labels
-        cloth_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_parsed_with_hands.png"))
+        cloth_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
         cloth_seg = cv2.cvtColor(cloth_seg, cv2.COLOR_BGR2RGB)
         cloth_seg = cv2.resize(cloth_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
         
@@ -180,7 +180,7 @@ class MPVDataset(Dataset):
         masked_image = image * (1 - mask)
         
         # load and process the body labels
-        body_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_parsed_body.png"))
+        body_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
         body_seg = cv2.cvtColor(body_seg, cv2.COLOR_BGR2RGB)
         body_seg = cv2.resize(body_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
         

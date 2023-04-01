@@ -5,4 +5,5 @@ python3 test.py \
 --which_iter best \
 --segmentation densepose \
 --transform_cloth \
+--dataroot ./data/mpv/ \
 --bpgm_id 256_26_3_mpv_192 \
