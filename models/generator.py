@@ -163,7 +163,7 @@ class OASIS_Simple(nn.Module):
         else:
             self.bpgm = None
         
-    def forward(self, I_m, C_t, body_seg, cloth_seg, densepose_seg, agnostic=None):
+    def forward(self, I_m, C_t, densepose_seg, agnostic=None):
         if agnostic is not None:
             C_transformed = self.transform_cloth_old(agnostic, C_t)
         else:
@@ -172,16 +172,15 @@ class OASIS_Simple(nn.Module):
         z = torch.cat((I_m, C_t, C_transformed), dim=1)
         
         seg_dict = {
-            "body": body_seg,
-            "cloth": cloth_seg,
+            "body": None,
+            "cloth": None,
             "densepose": densepose_seg
         }
         
         if len(self.opt.segmentation) == 1:
             seg = seg_dict[self.opt.segmentation[0]]
         else:
-            seg = torch.cat([seg_dict[mode] for mode in sorted(seg_dict.keys()) if mode in self.opt.segmentation], axis=1)
-            
+            seg = torch.cat([seg_dict[mode] for mode in sorted(seg_dict.keys()) if mode in self.opt.segmentation], axis=1)   
         x = self.oasis(seg, z)
         return x
     

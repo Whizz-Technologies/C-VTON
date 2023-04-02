@@ -295,7 +295,7 @@ class OASIS_model(nn.Module):
                     if self.opt.no_EMA:
                         fake = self.netG(image["I_m"], image["C_t"], label["body_seg"], label["cloth_seg"], label["densepose_seg"], agnostic=agnostic)
                     else:
-                        fake = self.netEMA(image["I_m"], image["C_t"], label["body_seg"], label["cloth_seg"], label["densepose_seg"], agnostic=agnostic)
+                        fake = self.netEMA(image["I_m"], image["C_t"], label["densepose_seg"], agnostic=agnostic)
                 return fake
             
             else:
@@ -398,29 +398,14 @@ def put_on_multi_gpus(opt, model):
 
 
 def preprocess_input(opt, data):
-    data['cloth_label'] = data['cloth_label'].long()
-    data['body_label'] = data['body_label'].long()
     data['densepose_label'] = data['densepose_label'].long()
     
-    data['cloth_label'] = data['cloth_label'].cuda()
-    data['body_label'] = data['body_label'].cuda()
     data['densepose_label'] = data['densepose_label'].cuda()
     
     for key in data['image'].keys():
         data['image'][key] = data['image'][key].cuda()
         
-    label_body_map = data['body_label']
-    bs, _, h, w = label_body_map.size()
-    nc = opt.semantic_nc[0]
-    input_body_label = torch.cuda.FloatTensor(bs, nc, h, w).zero_()
-    input_body_semantics = input_body_label.scatter_(1, label_body_map, 1.0)
-    
-    label_cloth_map = data['cloth_label']
-    bs, _, h, w = label_cloth_map.size()
-    nc = opt.semantic_nc[1]
-    input_cloth_label = torch.cuda.FloatTensor(bs, nc, h, w).zero_()
-    input_cloth_semantics = input_cloth_label.scatter_(1, label_cloth_map, 1.0)
-    
+  
     label_densepose_map = data['densepose_label']
     bs, _, h, w = label_densepose_map.size()
     nc = opt.semantic_nc[2]
@@ -428,7 +413,7 @@ def preprocess_input(opt, data):
     input_densepose_semantics = input_densepose_label.scatter_(1, label_densepose_map, 1.0)
     
     
-    return data['image'], {"body_seg": input_body_semantics, "cloth_seg": input_cloth_semantics, "densepose_seg": input_densepose_semantics}
+    return data['image'], {"densepose_seg": input_densepose_semantics}
 
 
 def generate_labelmix(label, fake_image, real_image):
