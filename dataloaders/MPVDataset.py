@@ -158,7 +158,7 @@ class MPVDataset(Dataset):
         cloth_image = cv2.cvtColor(cloth_image, cv2.COLOR_BGR2RGB)
         
         # load cloth labels
-        cloth_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_parsed_with_hands.png"))
+        cloth_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
         cloth_seg = cv2.cvtColor(cloth_seg, cv2.COLOR_BGR2RGB)
         cloth_seg = cv2.resize(cloth_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
         
@@ -168,9 +168,10 @@ class MPVDataset(Dataset):
         # additionally, get cloth segmentations by cloth part
         cloth_seg_transf = np.zeros(self.opt.img_size)
         mask = np.zeros(self.opt.img_size)
-        for i, color in enumerate(semantic_cloth_labels):
+        for i, color in enumerate(semantic_densepose_labels):
             cloth_seg_transf[np.all(cloth_seg == color, axis=-1)] = i
-            if i < (6 + self.opt.no_bg):    # this works, because colors are sorted in a specific way with background being the 8th.
+            if 2 <= i < (5 + self.opt.no_bg):     # this works, because colors are sorted in a specific way with background being the 8th.
+                print("self.opt.no_bg",self.opt.no_bg)
                 mask[np.all(cloth_seg == color, axis=-1)] = 1.0
         
         cloth_seg_transf = np.expand_dims(cloth_seg_transf, 0)
@@ -232,6 +233,7 @@ class MPVDataset(Dataset):
         cloth_image = (cloth_image - 0.5) / 0.5
         
         if self.opt.bpgm_id.find("old") >= 0:
+            print("OLD")
             # load pose points
             pose_name = df_row["poseA"].replace('.jpg', '_keypoints.json')
             with open(os.path.join(self.db_path, pose_name), 'r') as f:
@@ -269,7 +271,8 @@ class MPVDataset(Dataset):
             shape = shape.unsqueeze(0)
             
             # extract just the head image
-            head_label_colors = [0, 128, 0], [128, 0, 192]
+            # head_label_colors = [0, 128, 0], [128, 0, 192]
+            head_label_colors = [255, 160, 122], [127, 255, 212]
             
             head_mask = torch.zeros(self.opt.img_size)
             for color in head_label_colors:
@@ -280,6 +283,7 @@ class MPVDataset(Dataset):
             # cloth-agnostic representation
             agnostic = torch.cat([shape, im_h, pose_map], 0).float()
         else:
+            print("New")
             agnostic = ""
 
         return {"image": {"I": image,
