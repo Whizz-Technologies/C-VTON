@@ -45,7 +45,7 @@ if opt.phase == "test":
     model = models.put_on_multi_gpus(opt, model)
     model.eval()
 
-    dataset = dataset_cl(opt, phase=opt.phase, test_pairs='/content/C-VTON/data/mpv/text_pairs.txt')
+    dataset = dataset_cl(opt, phase=opt.phase, test_pairs='/content/C-VTON/test_pairs.txt')
     
     test_dataloader = DataLoader(dataset, batch_size=1, shuffle=False, drop_last=False)
     

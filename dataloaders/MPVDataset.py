@@ -158,7 +158,8 @@ class MPVDataset(Dataset):
         cloth_image = cv2.cvtColor(cloth_image, cv2.COLOR_BGR2RGB)
         
         # load cloth labels
-        cloth_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
+        #cloth_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
+        cloth_seg = cv2.imread('/content/1LJ21D005-G11@10=person_half_front_densepose.png')
         cloth_seg = cv2.cvtColor(cloth_seg, cv2.COLOR_BGR2RGB)
         cloth_seg = cv2.resize(cloth_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
         
@@ -181,7 +182,8 @@ class MPVDataset(Dataset):
         masked_image = image * (1 - mask)
         
         # load and process the body labels
-        body_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
+        # body_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
+        body_seg = cv2.imread('/content/image_bgr_0.jpg')
         body_seg = cv2.cvtColor(body_seg, cv2.COLOR_BGR2RGB)
         body_seg = cv2.resize(body_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
         
@@ -213,7 +215,8 @@ class MPVDataset(Dataset):
         body_seg_transf = torch.tensor(body_seg_transf)
         
         # load and process denspose labels
-        densepose_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
+        # densepose_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
+        densepose_seg = cv2.imread('/content/1LJ21D005-G11@10=person_half_front_densepose.png')
         densepose_seg = cv2.cvtColor(densepose_seg, cv2.COLOR_BGR2RGB)
         densepose_seg = cv2.resize(densepose_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
         
