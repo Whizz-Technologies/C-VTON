@@ -35,6 +35,13 @@ semantic_cloth_labels = [
     [0, 128, 192]
 ]
 
+cloth_segm_list = [
+  [128,0,0],
+  [128,128,0],
+  [0,128,0]
+]
+
+
 semantic_densepose_labels = [
     [0, 0, 0], #Background
 	[105, 105, 105], 
@@ -156,25 +163,45 @@ class MPVDataset(Dataset):
         # extract non-warped cloth
         cloth_image = cv2.imread(os.path.join(self.db_path, df_row["target"]))
         cloth_image = cv2.cvtColor(cloth_image, cv2.COLOR_BGR2RGB)
-        
-        # load cloth labels
-        #cloth_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
-        cloth_seg = cv2.imread('/content/seg_0_cvton.png')
-        cloth_seg = cv2.cvtColor(cloth_seg, cv2.COLOR_BGR2RGB)
-        cloth_seg = cv2.resize(cloth_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
-        
-        # mask the image to get desired inputs
-        
-        # get the mask without upper clothes / dress, hands, neck
-        # additionally, get cloth segmentations by cloth part
-        cloth_seg_transf = np.zeros(self.opt.img_size)
-        mask = np.zeros(self.opt.img_size)
-        for i, color in enumerate(semantic_densepose_labels):
-            cloth_seg_transf[np.all(cloth_seg == color, axis=-1)] = i
-            if 2 <= i < (5 + self.opt.no_bg):     # this works, because colors are sorted in a specific way with background being the 8th.
-                print("self.opt.no_bg",self.opt.no_bg)
-                mask[np.all(cloth_seg == color, axis=-1)] = 1.0
-        
+        cloth_image = cv2.resize(cloth_image,(192,256))
+        use_cloth_seg = True
+        if use_cloth_seg == True:
+          # load cloth labels
+          #cloth_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
+          cloth_seg = cv2.imread('/content/img_t_0_generated.png')
+          cloth_seg = cv2.cvtColor(cloth_seg, cv2.COLOR_BGR2RGB)
+          cloth_seg = cv2.resize(cloth_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
+          
+          # mask the image to get desired inputs
+          
+          # get the mask without upper clothes / dress, hands, neck
+          # additionally, get cloth segmentations by cloth part
+          cloth_seg_transf = np.zeros(self.opt.img_size)
+          mask = np.zeros(self.opt.img_size)
+          for i, color in enumerate(cloth_segm_list):
+              cloth_seg_transf[np.all(cloth_seg == color, axis=-1)] = i
+              if 0 <= i < (2 + self.opt.no_bg):     # this works, because colors are sorted in a specific way with background being the 8th.
+                  print("self.opt.no_bg",self.opt.no_bg)
+                  mask[np.all(cloth_seg == color, axis=-1)] = 1.0
+        else:
+          # load cloth labels
+          #cloth_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
+          cloth_seg = cv2.imread('/content/seg_0_cvton.png')
+          cloth_seg = cv2.cvtColor(cloth_seg, cv2.COLOR_BGR2RGB)
+          cloth_seg = cv2.resize(cloth_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
+          
+          # mask the image to get desired inputs
+          
+          # get the mask without upper clothes / dress, hands, neck
+          # additionally, get cloth segmentations by cloth part
+          cloth_seg_transf = np.zeros(self.opt.img_size)
+          mask = np.zeros(self.opt.img_size)
+          for i, color in enumerate(semantic_densepose_labels):
+              cloth_seg_transf[np.all(cloth_seg == color, axis=-1)] = i
+              if 2 <= i < (5 + self.opt.no_bg):     # this works, because colors are sorted in a specific way with background being the 8th.
+                  print("self.opt.no_bg",self.opt.no_bg)
+                  mask[np.all(cloth_seg == color, axis=-1)] = 1.0
+        cv2.imwrite("/content/mask.jpg",mask*255)
         cloth_seg_transf = np.expand_dims(cloth_seg_transf, 0)
         cloth_seg_transf = torch.tensor(cloth_seg_transf)
         
