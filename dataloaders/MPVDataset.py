@@ -156,6 +156,7 @@ class MPVDataset(Dataset):
 
         # get original image of person
         image = cv2.imread(os.path.join(self.db_path, df_row["poseA"]))
+        id_img =  df_row["poseA"].split('_')[1].split('.')[0]
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
         original_size = image.shape[:2]
@@ -168,7 +169,7 @@ class MPVDataset(Dataset):
         if use_cloth_seg == True:
           # load cloth labels
           #cloth_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
-          cloth_seg = cv2.imread('/content/img_t_0_generated.png')
+          cloth_seg = cv2.imread('/content/img_t_{}_generated.png'.format(id_img))
           cloth_seg = cv2.cvtColor(cloth_seg, cv2.COLOR_BGR2RGB)
           cloth_seg = cv2.resize(cloth_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
           
@@ -186,7 +187,7 @@ class MPVDataset(Dataset):
         else:
           # load cloth labels
           #cloth_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
-          cloth_seg = cv2.imread('/content/seg_0_cvton.png')
+          cloth_seg = cv2.imread('/content/seg_{}_cvton.png'.format(id_img))
           cloth_seg = cv2.cvtColor(cloth_seg, cv2.COLOR_BGR2RGB)
           cloth_seg = cv2.resize(cloth_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
           
@@ -210,7 +211,7 @@ class MPVDataset(Dataset):
         
         # load and process the body labels
         # body_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
-        body_seg = cv2.imread('/content/seg_0_cvton.png')
+        body_seg = cv2.imread('/content/seg_{}_cvton.png'.format(id_img))
         body_seg = cv2.cvtColor(body_seg, cv2.COLOR_BGR2RGB)
         body_seg = cv2.resize(body_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
         
@@ -243,7 +244,7 @@ class MPVDataset(Dataset):
         
         # load and process denspose labels
         # densepose_seg = cv2.imread(os.path.join(self.db_path, df_row["poseA"][:-4] + "_densepose.png"))
-        densepose_seg = cv2.imread('/content/seg_0_cvton.png')
+        densepose_seg = cv2.imread('/content/seg_{}_cvton.png'.format(id_img))
         densepose_seg = cv2.cvtColor(densepose_seg, cv2.COLOR_BGR2RGB)
         densepose_seg = cv2.resize(densepose_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
         
