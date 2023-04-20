@@ -105,10 +105,12 @@ class VitonDataset(Dataset):
         
         test_pairs = "viton_%s_pairs.txt" % ("test" if phase in {"test", "test_same"} else "train") if test_pairs is None else test_pairs
         # test_pairs = "/home/benjamin/StyleTON/data/viton/viton_train_swap.txt"
+        print(os.path.join(self.db_path, test_pairs))
         self.filepath_df = pd.read_csv(os.path.join(self.db_path, test_pairs), sep=" ", names=["poseA", "target"])
         # self.filepath_df.target = self.filepath_df.target.str.replace("_0", "_1")
         if phase == "test_same":
-            self.filepath_df.target = self.filepath_df.poseA.str.replace("_0", "_1")
+            print("Test_same")
+            self.filepath_df.target = self.filepath_df.poseA.str.replace("_0", "_0")
         
         if phase == "train":
             self.filepath_df = self.filepath_df.iloc[:int(len(self.filepath_df) * opt.train_size)]
@@ -129,20 +131,24 @@ class VitonDataset(Dataset):
     
     def __getitem__(self, index):
         df_row = self.filepath_df.iloc[index]
-
+        print(self.filepath_df.head())
         # get original image of person
-        image = cv2.imread(os.path.join(self.db_path, "data", "image", df_row["poseA"]))
+        print(df_row["poseA"])
+        print(os.path.join(self.db_path, "image", df_row["poseA"]))
+        image = cv2.imread(os.path.join(self.db_path, "image", df_row["poseA"]))
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = cv2.resize(image, self.opt.img_size[::-1], interpolation=cv2.INTER_AREA)
         
         original_size = image.shape[:2]
         
         # extract non-warped cloth
-        cloth_image = cv2.imread(os.path.join(self.db_path, "data", "cloth", df_row["target"]))
+        print(os.path.join(self.db_path, "cloth", df_row["target"]))
+        cloth_image = cv2.imread(os.path.join(self.db_path, "cloth", df_row["target"]))
         cloth_image = cv2.cvtColor(cloth_image, cv2.COLOR_BGR2RGB)
         
         # load cloth labels
-        cloth_seg = cv2.imread(os.path.join(self.db_path, "data", "image_parse_with_hands", df_row["poseA"].replace(".jpg", ".png")))
+        print(os.path.join(self.db_path, 'data',"image_parse_with_hands", '0' + df_row["poseA"].replace("00.jpg", "0.png")))
+        cloth_seg = cv2.imread(os.path.join(self.db_path, 'data',"image_parse_with_hands", '0' + df_row["poseA"].replace("00.jpg", "0.png")))
         cloth_seg = cv2.cvtColor(cloth_seg, cv2.COLOR_BGR2RGB)
         cloth_seg = cv2.resize(cloth_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
 
@@ -164,7 +170,8 @@ class VitonDataset(Dataset):
         masked_image = image * (1 - mask)
         
         # load and process the body labels
-        body_seg = cv2.imread(os.path.join(self.db_path, "data", "image_body_parse", df_row["poseA"].replace(".jpg", ".png")))
+        print(os.path.join(self.db_path, "data", "image_body_parse", '0' + df_row["poseA"].replace("00.jpg", "0.png")))
+        body_seg = cv2.imread(os.path.join(self.db_path, "data", "image_body_parse", '0' + df_row["poseA"].replace("00.jpg", "0.png")))
         body_seg = cv2.cvtColor(body_seg, cv2.COLOR_BGR2RGB)
         body_seg = cv2.resize(body_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
         
@@ -195,8 +202,7 @@ class VitonDataset(Dataset):
         
         body_seg_transf = np.expand_dims(body_seg_transf, 0)
         body_seg_transf = torch.tensor(body_seg_transf)
-        
-        densepose_seg = cv2.imread(os.path.join(self.db_path, "data", "image_densepose_parse", df_row["poseA"].replace(".jpg", ".png")))
+        densepose_seg = cv2.imread(os.path.join(self.db_path, "data", "image_densepose_parse", '0' + df_row["poseA"].replace("00.jpg", "0.png")))
         densepose_seg = cv2.cvtColor(densepose_seg, cv2.COLOR_BGR2RGB)
         densepose_seg = cv2.resize(densepose_seg, self.opt.img_size[::-1], interpolation=cv2.INTER_NEAREST)
         
